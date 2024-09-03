@@ -53,11 +53,18 @@ jobs:
       #       --tenant-id "$Env:AZURE_TENANT_ID"
       #   shell: pwsh
 
+      - name: Create env for Network Isolation
+        if: ${{ inputs.AZURE_NETWORK_ISOLATION == true }}
+        run: azd env new ${{ inputs.AZURE_ENV_NAME }}
+        env:
+          AZURE_ENV_NAME: ${{ inputs.AZURE_ENV_NAME }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
       # if AZURE_NETWORK_ISOLATION is true, set variable
       - name: Set Network Isolation
         if: ${{ inputs.AZURE_NETWORK_ISOLATION == true }}
-        run: azd env new ${{ inputs.AZURE_ENV_NAME }}
-          azd env set AZURE_NETWORK_ISOLATION true
+        run: azd env set AZURE_NETWORK_ISOLATION true
         env:
           AZURE_ENV_NAME: ${{ inputs.AZURE_ENV_NAME }}
           AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
