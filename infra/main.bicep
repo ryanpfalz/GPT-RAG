@@ -76,9 +76,9 @@ var _deployStorageAccount = _deployDataIngestion || _deployFrontend
 
 @description('Settings to define reusable resources.')
 var _azureReuseConfigDefaults = {
-  aoaiReuse: false
-  existingAoaiResourceGroupName: ''
-  existingAoaiName: ''
+  aoaiReuse: true
+  existingAoaiResourceGroupName: 'rg-ghni-dev-2'
+  existingAoaiName: 'oai0-s7f4rg2zkvghs'
   appInsightsReuse: false
   existingAppInsightsResourceGroupName: ''
   existingAppInsightsName: ''
@@ -95,9 +95,9 @@ var _azureReuseConfigDefaults = {
   existingCosmosDbResourceGroupName: ''
   existingCosmosDbAccountName: ''
   existingCosmosDbDatabaseName : ''
-  keyVaultReuse: false
-  existingKeyVaultResourceGroupName: ''
-  existingKeyVaultName: ''
+  keyVaultReuse: true
+  existingKeyVaultResourceGroupName: 'rg-ghni-dev-2'
+  existingKeyVaultName: 'kv0-s7f4rg2zkvghs'
   storageReuse: false
   existingAccountResourceGroupName: ''
   existingStorageName: ''
