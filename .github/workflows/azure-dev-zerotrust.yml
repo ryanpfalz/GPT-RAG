@@ -20,15 +20,16 @@ jobs:
     uses: ./.github/workflows/deploy-template-zerotrust-infra.yml
     secrets: inherit
     with:
-      AZURE_ENV_NAME: ghni-dev-1 # edit to match the name of your environment
+      AZURE_ENV_NAME: ghni-dev-2 # edit to match the name of your environment
       AZURE_NETWORK_ISOLATION: false
-#   deploy-test:
-#     uses: ./.github/workflows/deploy-template-zerotrust-infra.yml
-#     secrets: inherit
-#     needs: [deploy-dev]
-#     with:
-#       AZURE_ENV_NAME: EDIT-test # edit to match the name of your environment
-#       AZURE_NETWORK_ISOLATION: true
+
+  deploy-test:
+    uses: ./.github/workflows/deploy-template-zerotrust-infra.yml
+    secrets: inherit
+    needs: [deploy-dev]
+    with:
+      AZURE_ENV_NAME: ghni-test-2 # edit to match the name of your environment
+      AZURE_NETWORK_ISOLATION: false
 
 #   deploy-prod:
 #     uses: ./.github/workflows/deploy-template-zerotrust-infra.yml

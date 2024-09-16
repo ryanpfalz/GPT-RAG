@@ -1,15 +1,16 @@
 trigger:
   # - main
   # - master
-  - none
-  # - networkisolated
+  # - none
+  - dev
 
 pool:
   vmImage: ubuntu-latest
 
 # edit these to match the names of your environments
 variables:
-  dev_env: <dev_env_name>
+  CI: true
+  dev_env: '<test_env_name>'
   # test_env: <test_env_name>
   # prod_env: <prod_env_name>
 
@@ -23,11 +24,11 @@ stages:
           runOnce:
             deploy:
               steps:
-                - template: ./deploy-template.yml
+                - template: ./deploy-template-zerotrust.yml
                   parameters:
                     azureEnvName: "$(dev_env)"
                     serviceConnection: "$(dev_env)" # if your service connection name is different from the environment name, change this
-                    networkIsolation: true
+                    networkIsolation: false
 
   # - stage: "DeployTest"
   #   displayName: "Deploy to the test environment"
