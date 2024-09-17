@@ -8,8 +8,8 @@ on:
     branches:
       # - main
       # - master
-      # - none
-      - networkisolated
+      - none
+      # - networkisolated
 
 permissions:
   id-token: write
