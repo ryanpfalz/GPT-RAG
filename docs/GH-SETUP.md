@@ -2,9 +2,6 @@
 
 This document outlines the steps to set up a multi-environment workflow to deploy infrastructure and services to Azure using GitHub Actions, taking the solution from proof of concept to production-ready.
 
-> [!NOTE]
-> Note that additional steps may be required when working with the Zero Trust Architecture Deployment to handle deploying to a network-isolated environment. This guide is currently focused on deploying the Basic Architecture Deployment.
-
 # Assumptions:
 
 - This example assumes you're using a GitHub organization with GitHub environments
@@ -40,6 +37,7 @@ This document outlines the steps to set up a multi-environment workflow to deplo
 # Steps:
 
 > [!NOTE]
+>
 > 1. All commands below are to be run in a Bash shell.
 > 2. This guide aims to provide automated/programmatic steps for pipeline setup where possible. Manual setup is also possible, but not covered extensively in this guide. Please read more about manual pipeline setup [here](https://github.com/Azure/azure-dev/blob/main/cli/azd/docs/manual-pipeline-config.md).
 
@@ -159,8 +157,7 @@ prod_client_id=$(az ad sp list --display-name $prod_principal_name --query "[].a
 > [!TIP]
 > Verify that the variables are set by printing them out with `echo $<env>_client_id`.
 
-> [!NOTE]
-> _Alternative approach to get the client IDs in the above steps:_
+> [!NOTE] > _Alternative approach to get the client IDs in the above steps:_
 > In the event that there are multiple Service Principals containing the same name, the `az ad sp list` command executed above may not pull the correct ID. You may execute an alternate command to manually review the list of Service Principals by name and ID. The command to do this is exemplified below for the dev environment.
 >
 > ```bash
@@ -209,7 +206,14 @@ rm federated_id.json # clean up temp file
 
 ## 4. Modify the workflow files as needed for deployment
 
+### Deploy network-isolated environment
+
+In the `azure-dev.yml` file, pass `true` to the `AZURE_NETWORK_ISOLATION` parameter for each deployment stage if you want to deploy the infrastructure to a network-isolated environment. If the value is `false`, the infrastructure will be deployed to a non-network-isolated environment.
+
+### Updating environment names
+
 > [!IMPORTANT]
+>
 > - The environment names in the below described `azure-dev.yml` **need to be edited to match the environment names you created**. In the file, these values are passed into the template as the `AZURE_ENV_NAME`, with a comment stating `edit to match the name of your environment`. _If you don't edit these values, the workflow will not work properly_.
 > - The `workflow_dispatch` in the `azure-dev.yml` file is set to trigger on push to a branch `none`. You may modify this to trigger on a specific branch or event.
 
