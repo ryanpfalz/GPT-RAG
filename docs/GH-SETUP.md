@@ -1,11 +1,10 @@
 # Multi-Environment GitHub Setup
 
-This document outlines the steps to set up a multi-environment workflow to deploy infrastructure and services to Azure using GitHub Actions, taking the solution from proof of concept to production-ready.
+This document outlines the steps to set up a multi-environment workflow to deploy infrastructure to Azure using GitHub Actions, taking the solution from proof of concept to production-ready.
 
 # Assumptions:
 
 - This example assumes you're using a GitHub organization with GitHub environments
-- This example deploys the infrastructure in the same pipeline as all of the services.
 - This example deploys three environments: dev, test, and prod. You may modify the number and names of environments as needed.
 - This example uses [`azd pipeline config`](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/configure-devops-pipeline?tabs=azdo) to rapidly set up GitHub workflows and federated identity configuration for enhanced security.
 - All below commands are run as a one-time setup on a local machine by an admin who has access to the GitHub Repository and Azure tenant.
@@ -217,15 +216,15 @@ In the `azure-dev.yml` file, pass `true` to the `AZURE_NETWORK_ISOLATION` parame
 > - The environment names in the below described `azure-dev.yml` **need to be edited to match the environment names you created**. In the file, these values are passed into the template as the `AZURE_ENV_NAME`, with a comment stating `edit to match the name of your environment`. _If you don't edit these values, the workflow will not work properly_.
 > - The `workflow_dispatch` in the `azure-dev.yml` file is set to trigger on push to a branch `none`. You may modify this to trigger on a specific branch or event.
 
-- The following files in the `.github/workflows` folder are used to deploy the infrastructure and services to Azure:
+- The following files in the `.github/workflows` folder are used to deploy the infrastructure to Azure:
   - `azure-dev.yml`
     - This is the main file that triggers the deployment workflow. The environment names are passed as inputs to the deploy job.
   - `deploy-template.yml`
-    - This is a template file invoked by `azure-dev.yml` that is used to deploy the infrastructure and services to Azure. This file needs to be edited if you are using client secret authentication.
+    - This is a template file invoked by `azure-dev.yml` that is used to deploy the infrastructure to Azure. This file needs to be edited if you are using client secret authentication.
 
 ## 5. Customization for your Enterprise
 
-This end-to-end DevOps guide serves as a proof of concept of how to deploy your code to multiple environments and promote your code into production rapidly, just as the core RAG solution in this guide is intended to prove an end-to-end architecture with a frontend, orchestrator, and data ingestion service.
+This end-to-end DevOps guide serves as a proof of concept of how to deploy your code to multiple environments and promote your code into production rapidly.
 
 In the case of both this DevOps guide and the core RAG solution, you will likely want to customize the code and workflows to fit your enterprise's specific needs. For example, you may want to add additional tests, security checks, or other steps to the workflow. You may also have a different Git branching or deployment strategy that necessitates changes to the workflows. From a design perspective, you may choose to modularize the the workflows differently, or inject naming conventions or other enterprise-specific standards.
 
