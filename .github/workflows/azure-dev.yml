@@ -8,8 +8,8 @@ on:
     branches:
       # - main
       # - master
-      - none
-      # - networkisolated
+      # - none
+      - networkisolated
 
 permissions:
   id-token: write
@@ -20,17 +20,16 @@ jobs:
     uses: ./.github/workflows/deploy-template-infra.yml
     secrets: inherit
     with:
-      AZURE_ENV_NAME: ghni-dev-4 # edit to match the name of your environment
-      AZURE_NETWORK_ISOLATION: false
+      AZURE_ENV_NAME: ghni-dev-5 # edit to match the name of your environment
+      AZURE_NETWORK_ISOLATION: true
 
   deploy-test:
     uses: ./.github/workflows/deploy-template-infra.yml
     secrets: inherit
     needs: [deploy-dev]
     with:
-      AZURE_ENV_NAME: ghni-test-4 # edit to match the name of your environment
-      AZURE_NETWORK_ISOLATION: false
-
+      AZURE_ENV_NAME: ghni-test-5 # edit to match the name of your environment
+      AZURE_NETWORK_ISOLATION: true
 #   deploy-prod:
 #     uses: ./.github/workflows/deploy-template-zerotrust-infra.yml
 #     secrets: inherit
