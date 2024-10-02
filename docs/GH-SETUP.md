@@ -1,6 +1,12 @@
-# Multi-Environment GitHub Setup
+# Multi-Environment GitHub Setup - Infrastructure
 
 This document outlines the steps to set up a multi-environment workflow to deploy infrastructure to Azure using GitHub Actions, taking the solution from proof of concept to production-ready.
+
+> [!IMPORTANT] **This guide is part of a collection of guides to fully automate the end-to-end provisioning and deployment of this solution. The complete solution is made up of this repository (which deploys the solution infrastructure to Azure), and three additional repositories, each of which deploy a service to the infrastructure. Following setup of the infrastructure as described in this guide, additional setup steps need to be completed within each service repository to complete the end-to-end automated deployment. _The steps in this guide must be completed first._ The additional service repositories can be found at:**
+>
+> - [Frontend]()
+> - [Orchestrator]()
+> - [Ingestion]()
 
 # Assumptions:
 
@@ -201,7 +207,7 @@ rm federated_id.json # clean up temp file
 ```
 
 > [!NOTE]
-> The existing/unmodified federated credentials created by Azure Developer CLI in the Service Principals may be deleted.
+> You may delete the existing/unmodified federated credentials created by Azure Developer CLI in the Service Principals.
 
 ## 4. Modify the workflow files as needed for deployment
 
