@@ -224,6 +224,10 @@ Expand your data retrieval capabilities by integrating new data sources such as 
 ### Multi-Environment Deployment
 
 Once you've successfully deployed the GPT-RAG solution as a proof of concept and you're ready to formalize the deployment using a proper CI/CD process to accelerate your deployment to production, refer to the multi-environment deployment guides for either [Azure DevOps](./docs/AZDO-SETUP.md) or [GitHub](./docs/GH-SETUP.md).
+
+The guidance for setting up a decoupled CI/CD process requires additional configurations to deploy the infrastructure with the code in this repository and to deploy the services out of the [gpt-rag-frontend](https://github.com/Azure/gpt-rag-frontend), [gpt-rag-orchestrator](https://github.com/Azure/gpt-rag-orchestrator), and [gpt-rag-ingestion](https://github.com/Azure/gpt-rag-ingestion) repositories.
+
+<img src="media/devops-repos-automation.png" alt="Repositories and Automation" width="1024">
  
 ### Troubleshoot Deployment Issues
 

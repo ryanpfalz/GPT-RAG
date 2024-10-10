@@ -4,9 +4,9 @@ This document outlines the steps to set up a multi-environment workflow to deplo
 
 > [!IMPORTANT] **This guide is part of a collection of guides to fully automate the end-to-end provisioning and deployment of this solution. The complete solution is made up of this repository (which deploys the solution infrastructure to Azure), and three additional repositories, each of which deploy a service to the infrastructure. Following setup of the infrastructure as described in this guide, additional setup steps need to be completed within each service repository to complete the end-to-end automated deployment. _The steps in this guide must be completed first._ The additional service repositories can be found at:**
 >
-> - [Frontend]()
-> - [Orchestrator]()
-> - [Ingestion]()
+> - [Frontend](https://github.com/Azure/gpt-rag-frontend)
+> - [Orchestrator](https://github.com/Azure/gpt-rag-orchestrator)
+> - [Ingestion](https://github.com/Azure/gpt-rag-ingestion)
 
 # Assumptions:
 
