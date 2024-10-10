@@ -234,6 +234,10 @@ This end-to-end DevOps guide serves as a proof of concept of how to deploy your 
 
 In the case of both this DevOps guide and the core RAG solution, you will likely want to customize the code and workflows to fit your enterprise's specific needs. For example, you may want to add additional tests, security checks, or other steps to the workflow. You may also have a different Git branching or deployment strategy that necessitates changes to the workflows. From a design perspective, you may choose to modularize the the workflows differently, or inject naming conventions or other enterprise-specific standards.
 
+## Next steps
+
+Deploy either the [Frontend](https://github.com/Azure/gpt-rag-frontend), [Orchestrator](https://github.com/Azure/gpt-rag-orchestrator) or [Ingestion](https://github.com/Azure/gpt-rag-ingestion) service next.
+
 # Additional Resources:
 
 - [Support multiple environments with `azd` (github.com)](https://github.com/jasontaylordev/todo-aspnetcore-csharp-sqlite/blob/main/OPTIONAL_FEATURES.md)
