@@ -8,6 +8,7 @@ pool:
 
 # edit these to match the names of your environments
 variables:
+  CI: true
   dev_env: <dev_env_name>
   test_env: <test_env_name>
   prod_env: <prod_env_name>
@@ -22,10 +23,11 @@ stages:
           runOnce:
             deploy:
               steps:
-                - template: ./deploy-template.yml
+                - template: ./deploy-template-infra.yml
                   parameters:
                     azureEnvName: "$(dev_env)"
                     serviceConnection: "$(dev_env)" # if your service connection name is different from the environment name, change this
+                    networkIsolation: true
 
   - stage: "DeployTest"
     displayName: "Deploy to the test environment"
@@ -42,6 +44,7 @@ stages:
                   parameters:
                     azureEnvName: "$(test_env)"
                     serviceConnection: "$(test_env)" # if your service connection name is different from the environment name, change this
+                    networkIsolation: true
 
   - stage: "DeployProd"
     displayName: "Deploy to the prod environment"
@@ -58,3 +61,4 @@ stages:
                   parameters:
                     azureEnvName: "$(prod_env)"
                     serviceConnection: "$(prod_env)" # if your service connection name is different from the environment name, change this
+                    networkIsolation: true
