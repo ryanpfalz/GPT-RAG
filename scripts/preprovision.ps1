@@ -11,13 +11,19 @@ if ($env:AZURE_NETWORK_ISOLATION -match '^[1-9][0-9]*$' -or $env:AZURE_NETWORK_I
     # Display a heads up warning
     Write-Host "Heads up! AZURE_NETWORK_ISOLATION is set to a positive value."
 
-    # Prompt for user confirmation
-    $confirmation = Read-Host "Continue with the script? [Y/n]: "
-
-    # Check if the confirmation is positive
-    if ($confirmation -ne "Y" -and $confirmation -ne "y" -and $confirmation) {
-        exit 1
+    if ($env:CI) {
+        Write-Host "CI environment detected. Skipping user confirmation."
     }
+    else {
+        # Prompt for user confirmation
+        $confirmation = Read-Host "Continue with the script? [Y/n]: "
+
+        # Check if the confirmation is positive
+        if ($confirmation -ne "Y" -and $confirmation -ne "y" -and $confirmation) {
+            exit 1
+        }
+    }
+
 }
 
 exit 0

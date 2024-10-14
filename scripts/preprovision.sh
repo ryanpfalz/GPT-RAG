@@ -17,6 +17,11 @@ if [ "$AZURE_SKIP_NETWORK_ISOLATION_WARNING" -ge 1 ] 2>/dev/null || [ "$AZURE_SK
     exit 0
 fi
 
+if [ "$CI" = "true" ]; then
+    echo "CI environment detected. Skipping user confirmation."
+    exit 0
+fi
+
 # Check if AZURE_NETWORK_ISOLATION environment variable is set to a positive value
 if [ "$AZURE_NETWORK_ISOLATION" -ge 1 ] 2>/dev/null || [ "$AZURE_NETWORK_ISOLATION" = "true" ] || [ "$AZURE_NETWORK_ISOLATION" = "t" ]; then
     

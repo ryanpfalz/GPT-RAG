@@ -7,6 +7,10 @@ parameters:
     type: string
     default: "dev"
     displayName: "Azure Service Connection Name"
+  - name: networkIsolation
+    type: boolean
+    default: false
+    displayName: "Deploy Network Isolated Infrastructure"
 
 steps:
   - checkout: self
@@ -22,6 +26,36 @@ steps:
       azd config set auth.useAzCliAuth "true"
     displayName: Configure AZD to Use AZ CLI Authentication.
 
+  # Create env for Network Isolation if networkIsolation is true
+  - task: AzureCLI@2
+    displayName: Create Environment for Network Isolation
+    condition: eq('${{ parameters.networkIsolation }}', 'true')
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        azd env new ${{ parameters.azureEnvName }}
+    env:
+      AZURE_ENV_NAME: ${{ parameters.azureEnvName }}
+      AZURE_LOCATION: $(AZURE_LOCATION)
+      AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+
+  # Set Network Isolation variable if networkIsolation is true
+  - task: AzureCLI@2
+    displayName: Set Network Isolation Variable
+    condition: eq('${{ parameters.networkIsolation }}', 'true')
+    inputs:
+      azureSubscription: ${{ parameters.serviceConnection }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        azd env set AZURE_NETWORK_ISOLATION true
+    env:
+      AZURE_ENV_NAME: ${{ parameters.azureEnvName }}
+      AZURE_LOCATION: $(AZURE_LOCATION)
+      AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+
   - task: AzureCLI@2
     displayName: Provision Infrastructure
     inputs:
@@ -33,40 +67,6 @@ steps:
         chmod -R 755 ./scripts
         az login --service-principal -u $servicePrincipalId --tenant $tenantId --federated-token $idToken -o none
         azd provision --no-prompt
-    env:
-      AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
-      AZURE_ENV_NAME: ${{ parameters.azureEnvName }}
-      AZURE_LOCATION: $(AZURE_LOCATION)
-      AZURE_SERVICE_CONNECTION: ${{ parameters.serviceConnection }}
-
-  - task: AzureCLI@2
-    displayName: Package Services
-    inputs:
-      addSpnToEnvironment: true
-      azureSubscription: ${{ parameters.serviceConnection }}
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: |
-        chmod -R 755 ./scripts
-        az login --service-principal -u $servicePrincipalId --tenant $tenantId --federated-token $idToken -o none
-        azd package --no-prompt
-    env:
-      AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
-      AZURE_ENV_NAME: ${{ parameters.azureEnvName }}
-      AZURE_LOCATION: $(AZURE_LOCATION)
-      AZURE_SERVICE_CONNECTION: ${{ parameters.serviceConnection }}
-
-  - task: AzureCLI@2
-    displayName: Deploy Services
-    inputs:
-      addSpnToEnvironment: true
-      azureSubscription: ${{ parameters.serviceConnection }}
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: |
-        chmod -R 755 ./scripts
-        az login --service-principal -u $servicePrincipalId --tenant $tenantId --federated-token $idToken -o none
-        azd deploy --no-prompt
     env:
       AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
       AZURE_ENV_NAME: ${{ parameters.azureEnvName }}

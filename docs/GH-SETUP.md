@@ -1,14 +1,16 @@
-# Multi-Environment GitHub Setup
+# Multi-Environment GitHub Setup - Infrastructure
 
-This document outlines the steps to set up a multi-environment workflow to deploy infrastructure and services to Azure using GitHub Actions, taking the solution from proof of concept to production-ready.
+This document outlines the steps to set up a multi-environment workflow to deploy infrastructure to Azure using GitHub Actions, taking the solution from proof of concept to production-ready.
 
-> [!NOTE]
-> Note that additional steps may be required when working with the Zero Trust Architecture Deployment to handle deploying to a network-isolated environment. This guide is currently focused on deploying the Basic Architecture Deployment.
+> [!IMPORTANT] **This guide is part of a collection of guides to fully automate the end-to-end provisioning and deployment of this solution. The complete solution is made up of this repository (which deploys the solution infrastructure to Azure), and three additional repositories, each of which deploy a service to the infrastructure. Following setup of the infrastructure as described in this guide, additional setup steps need to be completed within each service repository to complete the end-to-end automated deployment. _The steps in this guide must be completed first._ The additional service repositories can be found at:**
+>
+> - [Frontend](https://github.com/Azure/gpt-rag-frontend)
+> - [Orchestrator](https://github.com/Azure/gpt-rag-orchestrator)
+> - [Ingestion](https://github.com/Azure/gpt-rag-ingestion)
 
 # Assumptions:
 
 - This example assumes you're using a GitHub organization with GitHub environments
-- This example deploys the infrastructure in the same pipeline as all of the services.
 - This example deploys three environments: dev, test, and prod. You may modify the number and names of environments as needed.
 - This example uses [`azd pipeline config`](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/configure-devops-pipeline?tabs=azdo) to rapidly set up GitHub workflows and federated identity configuration for enhanced security.
 - All below commands are run as a one-time setup on a local machine by an admin who has access to the GitHub Repository and Azure tenant.
@@ -40,6 +42,7 @@ This document outlines the steps to set up a multi-environment workflow to deplo
 # Steps:
 
 > [!NOTE]
+>
 > 1. All commands below are to be run in a Bash shell.
 > 2. This guide aims to provide automated/programmatic steps for pipeline setup where possible. Manual setup is also possible, but not covered extensively in this guide. Please read more about manual pipeline setup [here](https://github.com/Azure/azure-dev/blob/main/cli/azd/docs/manual-pipeline-config.md).
 
@@ -159,8 +162,7 @@ prod_client_id=$(az ad sp list --display-name $prod_principal_name --query "[].a
 > [!TIP]
 > Verify that the variables are set by printing them out with `echo $<env>_client_id`.
 
-> [!NOTE]
-> _Alternative approach to get the client IDs in the above steps:_
+> [!NOTE] > _Alternative approach to get the client IDs in the above steps:_
 > In the event that there are multiple Service Principals containing the same name, the `az ad sp list` command executed above may not pull the correct ID. You may execute an alternate command to manually review the list of Service Principals by name and ID. The command to do this is exemplified below for the dev environment.
 >
 > ```bash
@@ -205,25 +207,36 @@ rm federated_id.json # clean up temp file
 ```
 
 > [!NOTE]
-> The existing/unmodified federated credentials created by Azure Developer CLI in the Service Principals may be deleted.
+> You may delete the existing/unmodified federated credentials created by Azure Developer CLI in the Service Principals.
 
 ## 4. Modify the workflow files as needed for deployment
 
+### Deploy network-isolated environment
+
+In the `azure-dev.yml` file, pass `true` to the `AZURE_NETWORK_ISOLATION` parameter for each deployment stage if you want to deploy the infrastructure to a network-isolated environment. If the value is `false`, the infrastructure will be deployed to a non-network-isolated environment.
+
+### Updating environment names
+
 > [!IMPORTANT]
+>
 > - The environment names in the below described `azure-dev.yml` **need to be edited to match the environment names you created**. In the file, these values are passed into the template as the `AZURE_ENV_NAME`, with a comment stating `edit to match the name of your environment`. _If you don't edit these values, the workflow will not work properly_.
 > - The `workflow_dispatch` in the `azure-dev.yml` file is set to trigger on push to a branch `none`. You may modify this to trigger on a specific branch or event.
 
-- The following files in the `.github/workflows` folder are used to deploy the infrastructure and services to Azure:
+- The following files in the `.github/workflows` folder are used to deploy the infrastructure to Azure:
   - `azure-dev.yml`
     - This is the main file that triggers the deployment workflow. The environment names are passed as inputs to the deploy job.
   - `deploy-template.yml`
-    - This is a template file invoked by `azure-dev.yml` that is used to deploy the infrastructure and services to Azure. This file needs to be edited if you are using client secret authentication.
+    - This is a template file invoked by `azure-dev.yml` that is used to deploy the infrastructure to Azure. This file needs to be edited if you are using client secret authentication.
 
 ## 5. Customization for your Enterprise
 
-This end-to-end DevOps guide serves as a proof of concept of how to deploy your code to multiple environments and promote your code into production rapidly, just as the core RAG solution in this guide is intended to prove an end-to-end architecture with a frontend, orchestrator, and data ingestion service.
+This end-to-end DevOps guide serves as a proof of concept of how to deploy your code to multiple environments and promote your code into production rapidly.
 
 In the case of both this DevOps guide and the core RAG solution, you will likely want to customize the code and workflows to fit your enterprise's specific needs. For example, you may want to add additional tests, security checks, or other steps to the workflow. You may also have a different Git branching or deployment strategy that necessitates changes to the workflows. From a design perspective, you may choose to modularize the the workflows differently, or inject naming conventions or other enterprise-specific standards.
+
+## Next steps
+
+Deploy either the [Frontend](https://github.com/Azure/gpt-rag-frontend), [Orchestrator](https://github.com/Azure/gpt-rag-orchestrator) or [Ingestion](https://github.com/Azure/gpt-rag-ingestion) service next.
 
 # Additional Resources:
 

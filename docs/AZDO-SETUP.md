@@ -1,14 +1,16 @@
 # Multi-Environment Azure DevOps Setup
 
-This document outlines the steps to set up a multi-environment workflow to deploy infrastructure and services to Azure using Azure Pipelines, taking the solution from proof of concept to production-ready.
+This document outlines the steps to set up a multi-environment workflow to deploy infrastructure to Azure using Azure Pipelines, taking the solution from proof of concept to production-ready.
 
-> [!NOTE]
-> Note that additional steps may be required when working with the Zero Trust Architecture Deployment to handle deploying to a network-isolated environment. This guide is currently focused on deploying the Basic Architecture Deployment.
+> [!IMPORTANT] **This guide is part of a collection of guides to fully automate the end-to-end provisioning and deployment of this solution. The complete solution is made up of this repository (which deploys the solution infrastructure to Azure), and three additional repositories, each of which deploy a service to the infrastructure. Following setup of the infrastructure as described in this guide, additional setup steps need to be completed within each service repository to complete the end-to-end automated deployment. _The steps in this guide must be completed first._ The additional service repositories can be found at:**
+>
+> - [Frontend](https://github.com/Azure/gpt-rag-frontend)
+> - [Orchestrator](https://github.com/Azure/gpt-rag-orchestrator)
+> - [Ingestion](https://github.com/Azure/gpt-rag-ingestion)
 
 # Assumptions:
 
 - This example assumes you have an Azure DevOps Organization and Project already set up.
-- This example deploys the infrastructure in the same pipeline as all of the services.
 - This example deploys three environments: dev, test, and prod. You may modify the number and names of environments as needed.
 - This example uses [`azd pipeline config`](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/configure-devops-pipeline?tabs=azdo) to rapidly set up Azure Pipelines and federated identity configuration for enhanced security.
 - All below commands are run as a one-time setup on a local machine by an admin who has access to the Azure DevOps Project and Azure tenant.
@@ -37,6 +39,7 @@ This document outlines the steps to set up a multi-environment workflow to deplo
 # Steps:
 
 > [!NOTE]
+>
 > 1. All commands below are to be run in a Bash shell.
 > 2. This guide aims to provide automated/programmatic steps for pipeline setup where possible. Manual setup is also possible, but not covered extensively in this guide. Please read more about manual pipeline setup [here](https://github.com/Azure/azure-dev/blob/main/cli/azd/docs/manual-pipeline-config.md).
 
@@ -69,7 +72,6 @@ Then, get a personal access token (PAT) from Azure DevOps and set the AZURE_DEVO
 - "Use and manage" Pipeline Resources permissions.
 - "Read, query, and manage" Service connections permissions.
 
-
 ```
 export AZURE_DEVOPS_EXT_PAT=<your-pat>
 ```
@@ -80,13 +82,14 @@ export AZURE_DEVOPS_EXT_PAT=<your-pat>
 Then, get the GUID of your Azure DevOps organization. This will be used when setting the [issuer field for the federated credential](https://learn.microsoft.com/en-us/azure/devops/pipelines/release/configure-workload-identity?view=azure-devops#create-a-managed-identity) in a later step. In this example, we will retrieve the GUID through the browser, but you may also develop a more sophisticated method to retrieve the GUID using the [Azure DevOps Accounts REST API](https://learn.microsoft.com/en-us/rest/api/azure/devops/account/accounts/list?view=azure-devops-rest-7.1&tabs=HTTP) (The Accounts API requires an [OAuth 2 token](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth?view=azure-devops) for authorization, setup of which is not covered in this guide).
 
 To get the GUID of your Azure DevOps organization via browser:
-1. In your browser, visit [https://app.vssps.visualstudio.com/_apis/accounts](https://app.vssps.visualstudio.com/_apis/accounts). Note that you must log into the account associated with your Azure DevOps Organization to access this page.
+
+1. In your browser, visit [https://app.vssps.visualstudio.com/\_apis/accounts](https://app.vssps.visualstudio.com/_apis/accounts). Note that you must log into the account associated with your Azure DevOps Organization to access this page.
 2. Press Ctrl+F to open the search bar and search for your Azure DevOps organization name.
 3. The GUID will be in the `AccountId` field. Copy this GUID and set it as a variable.
 
-    ```bash
-    azdo_org_guid='<your-org-guid>'
-    ```
+   ```bash
+   azdo_org_guid='<your-org-guid>'
+   ```
 
 Then, set some additional variables that will be used when setting up the environments, pipelines, and credentials:
 
@@ -119,12 +122,14 @@ When running `azd pipeline config` for each environment, enter your organization
 ##### Dev
 
 **Setup:** Set up the Dev environment, pipeline, and service principal:
+
 ```bash
 azd env new $dev_env
 azd pipeline config --principal-name $dev_principal_name --provider azdo
 ```
 
 **Post setup step #1:** Create a new federated credential in the Dev Service Principal
+
 ```bash
 echo '{"name": "'"${org}-${project}-${dev_env}"'", "issuer": "'"${issuer}"'", "subject": "'"sc://${org}/${project}/${dev_env}"'", "description": "'"${dev_env}"' environment", "audiences": ["'"${audiences}"'"]}' > federated_id.json
 
@@ -170,12 +175,14 @@ rm service_connection.json
 ##### Test
 
 **Setup:** Set up the Test environment, pipeline, and service principal:
+
 ```bash
 azd env new $test_env
 azd pipeline config --principal-name $test_principal_name --provider azdo
 ```
 
 **Post setup step #1:** Create a new federated credential in the Test Service Principal
+
 ```bash
 echo '{"name": "'"${org}-${project}-${test_env}"'", "issuer": "'"${issuer}"'", "subject": "'"sc://${org}/${project}/${test_env}"'", "description": "'"${test_env}"' environment", "audiences": ["'"${audiences}"'"]}' > federated_id.json
 
@@ -221,12 +228,14 @@ rm service_connection.json
 ##### Prod
 
 **Setup:** Set up the Prod environment, pipeline, and service principal:
+
 ```bash
 azd env new $prod_env
 azd pipeline config --principal-name $prod_principal_name --provider azdo
 ```
 
 **Post setup step #1:** Create a new federated credential in the Prod Service Principal
+
 ```bash
 echo '{"name": "'"${org}-${project}-${prod_env}"'", "issuer": "'"${issuer}"'", "subject": "'"sc://${org}/${project}/${prod_env}"'", "description": "'"${prod_env}"' environment", "audiences": ["'"${audiences}"'"]}' > federated_id.json
 
@@ -275,8 +284,7 @@ rm service_connection.json
 > [!NOTE]
 > The **"Post setup step #2"** actions above define several variables, populating them in a template JSON structure, found at `.azdo/pipelines/service-endpoint-config-template.json`. Read more about this approach [here](https://learn.microsoft.com/en-us/azure/devops/cli/service-endpoint?view=azure-devops#create-service-endpoint-using-configuration-file).
 
-> [!NOTE]
-> _Alternative approach to get the client IDs in the above steps:_
+> [!NOTE] > _Alternative approach to get the client IDs in the above steps:_
 > In the event that there are multiple Service Principals containing the same name, the `az ad sp list` command executed above may not pull the correct ID. You may execute an alternate command to manually review the list of Service Principals by name and ID. The command to do this is exemplified below for the dev environment.
 >
 > ```bash
@@ -285,7 +293,6 @@ rm service_connection.json
 > ```
 >
 > Also note you may get the client IDs from the Azure Portal.
-
 
 After performing the above steps, you will see corresponding files to your azd environments in the `.azure` folder.
 
@@ -333,21 +340,32 @@ az pipelines variable delete --name 'AZURE_ENV_NAME' --pipeline-id <pipeline-id>
 
 ## 3. Modify the workflow files as needed for deployment
 
+### Deploy network-isolated environment
+
+In the `azure-dev.yml` file, pass `true` to the `networkIsolation` parameter for each deployment stage if you want to deploy the infrastructure to a network-isolated environment. If the value is `false`, the infrastructure will be deployed to a non-network-isolated environment.
+
+### Updating environment names
+
 > [!IMPORTANT]
+>
 > - The environment names are defined as variables within the below described `azure-dev.yml` file, **which need to be edited to match the environment names you created.** In this example, the environment name is also used as the service connection name. If you used different names for the environment name and service connection name, you will **also need to update the service connection parameter passed in each stage**.
 > - The `trigger` in the `azure-dev.yml` file is set to `none` to prevent the pipeline from running automatically. You can change this to `main` or `master` to trigger the pipeline on a push to the main branch.
 
-- The following files in the `.azdo/pipelines` folder are used to deploy the infrastructure and services to Azure:
+- The following files in the `.azdo/pipelines` folder are used to deploy the infrastructure to Azure:
   - `azure-dev.yml`
     - This is the main file that triggers the deployment workflow. The environment names are passed as inputs to the deploy job.
   - `deploy-template.yml`
-    - This is a template file invoked by `azure-dev.yml` that is used to deploy the infrastructure and services to Azure.
+    - This is a template file invoked by `azure-dev.yml` that is used to deploy the infrastructure to Azure.
 
 ## 4. Customization for your Enterprise
 
-This end-to-end DevOps guide serves as a proof of concept of how to deploy your code to multiple environments and promote your code into production rapidly, just as the core RAG solution in this guide is intended to prove an end-to-end architecture with a frontend, orchestrator, and data ingestion service.
+This end-to-end DevOps guide serves as a proof of concept of how to deploy your code to multiple environments and promote your code into production rapidly.
 
 In the case of both this DevOps guide and the core RAG solution, you will likely want to customize the code and workflows to fit your enterprise's specific needs. For example, you may want to add additional tests, security checks, or other steps to the workflow. You may also have a different Git branching or deployment strategy that necessitates changes to the workflows. From a design perspective, you may choose to modularize the the workflows differently, or inject naming conventions or other enterprise-specific standards.
+
+## Next steps
+
+Deploy either the [Frontend](https://github.com/Azure/gpt-rag-frontend), [Orchestrator](https://github.com/Azure/gpt-rag-orchestrator) or [Ingestion](https://github.com/Azure/gpt-rag-ingestion) service next.
 
 # Additional Resources:
 

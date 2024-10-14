@@ -1,4 +1,4 @@
-name: Multi-Environment Build and Deploy
+name: Multi-Environment Infrastructure Deployment
 
 on:
   workflow_dispatch:
@@ -16,21 +16,24 @@ permissions:
 
 jobs:
   deploy-dev:
-    uses: ./.github/workflows/deploy-template.yml
+    uses: ./.github/workflows/deploy-template-infra.yml
     secrets: inherit
     with:
-      AZURE_ENV_NAME: EDIT-dev # edit to match the name of your environment
+      AZURE_ENV_NAME: dev # edit to match the name of your environment
+      AZURE_NETWORK_ISOLATION: true
 
   deploy-test:
-    uses: ./.github/workflows/deploy-template.yml
+    uses: ./.github/workflows/deploy-template-infra.yml
     secrets: inherit
     needs: [deploy-dev]
     with:
-      AZURE_ENV_NAME: EDIT-test # edit to match the name of your environment
+      AZURE_ENV_NAME: test # edit to match the name of your environment
+      AZURE_NETWORK_ISOLATION: true
 
   deploy-prod:
-    uses: ./.github/workflows/deploy-template.yml
+    uses: ./.github/workflows/deploy-template-infra.yml
     secrets: inherit
     needs: [deploy-test]
     with:
-      AZURE_ENV_NAME: EDIT-ghprod # edit to match the name of your environment
+      AZURE_ENV_NAME: prod # edit to match the name of your environment
+      AZURE_NETWORK_ISOLATION: true
