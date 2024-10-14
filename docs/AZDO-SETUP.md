@@ -286,7 +286,9 @@ rm service_connection.json
 > [!NOTE]
 > The **"Post setup step #2"** actions above define several variables, populating them in a template JSON structure, found at `.azdo/pipelines/service-endpoint-config-template.json`. Read more about this approach [here](https://learn.microsoft.com/en-us/azure/devops/cli/service-endpoint?view=azure-devops#create-service-endpoint-using-configuration-file).
 
-> [!NOTE] > _Alternative approach to get the client IDs in the above steps:_
+> [!NOTE]
+>
+> _Alternative approach to get the client IDs in the above steps:_
 > In the event that there are multiple Service Principals containing the same name, the `az ad sp list` command executed above may not pull the correct ID. You may execute an alternate command to manually review the list of Service Principals by name and ID. The command to do this is exemplified below for the dev environment.
 >
 > ```bash

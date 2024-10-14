@@ -164,7 +164,9 @@ prod_client_id=$(az ad sp list --display-name $prod_principal_name --query "[].a
 > [!TIP]
 > Verify that the variables are set by printing them out with `echo $<env>_client_id`.
 
-> [!NOTE] > _Alternative approach to get the client IDs in the above steps:_
+> [!NOTE]
+>
+> _Alternative approach to get the client IDs in the above steps:_
 > In the event that there are multiple Service Principals containing the same name, the `az ad sp list` command executed above may not pull the correct ID. You may execute an alternate command to manually review the list of Service Principals by name and ID. The command to do this is exemplified below for the dev environment.
 >
 > ```bash
