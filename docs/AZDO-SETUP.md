@@ -97,7 +97,8 @@ Then, set some additional variables that will be used when setting up the enviro
 
 ```bash
 org='<your-org-name>'
-project='<your-repo-name>'
+project='<your-project-name>'
+repo='<your-repo-name>'
 issuer=https://vstoken.dev.azure.com/$azdo_org_guid
 audiences="api://AzureADTokenExchange"
 ```
@@ -336,7 +337,14 @@ Once the pipeline YML file is committed to the repository and the environments a
 
 To do this in the Azure DevOps portal, navigate to the pipeline, edit the pipeline, open the variables menu, and delete the `AZURE_ENV_NAME` pipeline variable.
 
-You may alternately run the below command to delete the variable; ensure you replace the pipeline ID with the correct ID. You can find the pipeline ID by navigating to the pipeline in the Azure DevOps portal and looking at the URL. This value is also printed out after running `azd pipeline config`, in the "Link to view your pipeline status".
+You may alternately run the below command to delete the variable; ensure you replace the pipeline ID with the correct ID. There are a few different ways to find the pipeline ID:
+
+1. You can find the pipeline ID by navigating to the pipeline in the Azure DevOps portal and looking at the URL.
+2. Alternatively, this value is also printed out after running `azd pipeline config`, in the "Link to view your pipeline status".
+3. You may also run the below command:
+   - `pipeline_id=$(az pipelines show --name "Azure Dev Deploy ($repo)" --query "id")`
+
+Once you have the pipeline ID, run the below command to delete the variable (replace `<pipeline-id>` with the correct ID, or `$pipeline_id` if you set it in a variable):
 
 ```bash
 az pipelines variable delete --name 'AZURE_ENV_NAME' --pipeline-id <pipeline-id>
