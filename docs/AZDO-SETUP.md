@@ -337,9 +337,9 @@ Once the pipeline YML file is committed to the repository and the environments a
 
 To do this in the Azure DevOps portal, navigate to the pipeline, edit the pipeline, open the variables menu, and delete the `AZURE_ENV_NAME` pipeline variable.
 
-You may alternately run the below command to delete the variable; ensure you replace the pipeline ID with the correct ID. There are a few different ways to find the pipeline ID:
+You may alternately delete the variable programmatically - the pipeline ID is required to do this. There are a few different ways to find the pipeline ID:
 
-1. You can find the pipeline ID by navigating to the pipeline in the Azure DevOps portal and looking at the URL.
+1. You can find the pipeline ID by navigating to the pipeline in the Azure DevOps portal and looking at the URL for the 'definitionId'.
 2. Alternatively, this value is also printed out after running `azd pipeline config`, in the "Link to view your pipeline status".
 3. You may also run the below command:
    - `pipeline_id=$(az pipelines show --name "Azure Dev Deploy ($repo)" --query "id")`
